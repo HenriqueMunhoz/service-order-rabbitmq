@@ -35,5 +35,27 @@ module ServiceOrderRabbitmq
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    config.after_initialize do
+      require File.expand_path('/var/www/service-order-rabbitmq/config/environment', __dir__)
+
+      connection = Bunny.new('amqps://okezsgfv:2-UBqLVbLRRVlUrDTAANhLCf-wj4BGgB@toad.rmq.cloudamqp.com/okezsgfv')
+      connection.start
+      channel = connection.create_channel
+
+      queue = channel.queue('users.in', durable: true, auto_delete: false)
+
+      puts ' [*] Waiting for messages. To exit press CTRL+C'
+
+      fanout_name = 'users.out'
+      queue.bind(channel.exchange(fanout_name, type: :fanout))
+
+      puts "[consumer] #{queue.name} bound to #{fanout_name} exchange"
+
+      queue.subscribe do |d_info, properties, payload|
+        BunnyConsumer.call!(properties, payload)
+        puts "[consumer] #{queue.name} received #{properties[:type]}, from #{properties[:app_id]} with payload: #{payload}\n"
+      end
+    end
   end
 end

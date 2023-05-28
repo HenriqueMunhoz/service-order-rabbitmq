@@ -5,5 +5,5 @@ source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 if [[ "$#" -gt 0 ]] ; then
   $DOCKER_COMPOSE run --service-ports --rm $(app_env) web "$@"
 else
-  $DOCKER_COMPOSE run --service-ports --rm $(app_env) web bash -c "source script/common.sh; fix_linux_internal_host; bin/rails s -b 0.0.0.0 -p 3091"
+  $DOCKER_COMPOSE run --service-ports --rm $(app_env) web bash -c "bin/rails s -b 0.0.0.0 -p 3091;"
 fi
