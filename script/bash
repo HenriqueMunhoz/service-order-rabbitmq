@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+
+$DOCKER_COMPOSE run --rm web bash -c "source script/common.sh; fix_linux_internal_host; bash"

@@ -1,0 +1,33 @@
+version: '3'
+services:
+  db:
+    image: postgres:14.2-alpine
+    container_name: service_order-postgress
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command:
+      "postgres -c 'max_connections=500'"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+  web:
+    build: .
+    environment:
+      - RAILS_ENV=${RAILS_ENV}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    entrypoint: "sh ./bin/docker-entrypoint.sh"
+    depends_on:
+      - db
+    links:
+      - db
+    volumes:
+      - .:/var/www/service-order-rabbitmq
+    ports:
+      - "3091:3091"
+
+volumes:
+  postgres_data: {}

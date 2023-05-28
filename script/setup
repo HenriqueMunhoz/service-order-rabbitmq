@@ -1,0 +1,6 @@
+#!/bin/bash -e
+
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+
+$DOCKER_COMPOSE build && \
+$DOCKER_COMPOSE run --service-ports $(app_env) --rm -T web bash -c "bin/rails db:create db:migrate db:seed"

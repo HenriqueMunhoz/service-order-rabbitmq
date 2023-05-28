@@ -1,0 +1,14 @@
+#!/bin/bash -e
+
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+
+TEST_ARGS="$@"
+
+if [ -z "$TEST_ARGS" ]
+then
+    echo "Running the entire test suite"
+    $DOCKER_COMPOSE run -T -e RAILS_ENV=test $(app_env) --rm web bash -c "RAILS_ENV=test bin/rails db:create db:migrate; rspec </dev/null"
+else
+    echo "Running only the tests $TEST_ARGS **without a db:setup**"
+    $DOCKER_COMPOSE run -T -e RAILS_ENV=test $(app_env) --rm web bash -c "rspec $TEST_ARGS </dev/null"
+fi
